@@ -1,0 +1,34 @@
+[package]
+name = "cyclovander"
+version = "0.1.0"
+authors = ["Edoardo Signorini <edoars@gmail.com>"]
+edition = "2018"
+
+license = "Apache-2.0"
+readme = "README.md"
+
+[features]
+default = ["intel-mkl-system"]
+
+netlib-static   = ["ndarray-linalg/netlib-static"]
+netlib-system   = ["ndarray-linalg/netlib-system"]
+
+openblas-static = ["ndarray-linalg/openblas-static"]
+openblas-system = ["ndarray-linalg/openblas-system"]
+
+intel-mkl-static = ["ndarray-linalg/intel-mkl-static"]
+intel-mkl-system = ["ndarray-linalg/intel-mkl-system"]
+
+[dependencies]
+ndarray = "0.15.2"
+red_primality = "0.2.0"
+num = "0.4.0"
+structopt = "0.3.13"
+anyhow = "1.0.48"
+indicatif = "0.16.2"
+atty = "0.2"
+rayon = "1.5.1"
+
+[dependencies.ndarray-linalg]
+version = "0.14.1"
+default-features = false
