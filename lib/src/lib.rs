@@ -62,3 +62,32 @@ pub fn cond(n: u64) -> f64 {
 
     m * (tr / (n as f64)).sqrt()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tr_prime() {
+        let primes: [u64; 5] = [11, 101, 103, 137, 179];
+        let traces = primes.map(|p| tr_h(p));
+
+        assert_eq!(traces, [20, 200, 204, 272, 356]);
+    }
+
+    #[test]
+    fn tr_prime_power() {
+        let primes_power: [u64; 5] = [25, 27, 49, 121, 841];
+        let traces = primes_power.map(|p| tr_h(p));
+
+        assert_eq!(traces, [40, 36, 84, 220, 1624]);
+    }
+
+    #[test]
+    fn tr_squarefree() {
+        let squarefrees: [u64; 5] = [259, 534, 649, 785, 901];
+        let traces = squarefrees.map(|p| tr_h(p));
+
+        assert_eq!(traces, [1576, 1640, 5776, 3740, 11600]);
+    }
+}
