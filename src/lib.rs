@@ -1,3 +1,10 @@
+//! Rust crate associated with the article [`DSS21`].
+//!
+//! Provides an efficient function to compute the condition number of *V_n*, the Vandermonde matrix associated with the *n*th cyclotomic polynomial.
+//! The condition number is computed via the trace of the matrix *H_n*, as shown in [`DSS20`].
+//!
+//! [`DSS20`]: https://doi.org/10.1515/jmc-2020-0009
+
 use ndarray::Array;
 use ndarray_linalg::*;
 use num::integer::gcd;
@@ -15,6 +22,13 @@ fn get_index(i: usize, j: usize) -> usize {
     idx as usize
 }
 
+/// Compute the trace of *H_n*.
+///
+/// *H_n* is defined as *n G_n^{-1}*, where *G_n* is the Gram matrix of *V_n*, the Vandermonde matrix associated with the *n*th cyclotomic polynomial.
+///
+/// In [`DSS20`] it is shown that for every positive integer *n*, the matrix *H_n* has integer entries.
+///
+/// [`DSS20`]: https://doi.org/10.1515/jmc-2020-0009
 #[inline]
 pub fn tr_h(n: u64) -> u64 {
     let m = euler_totient(n) as usize;
