@@ -25,3 +25,19 @@ pub fn tr_h(n: u64) -> u64 {
 
     tr.round() as u64
 }
+
+/// Compute the condition number of *V_n*.
+///
+/// *V_n* is the Vandermonde matrix associated with the *n*th cyclotomic polynomial.
+///
+/// As shown in [`DSS20`], the condition number can be computed as *m\sqrt(n) * sqrt(Tr(H_n))*.
+/// The trace of *H_n* is computed in [`tr_h`].
+///
+/// [`DSS20`]: https://doi.org/10.1515/jmc-2020-0009
+#[inline]
+pub fn cond(n: u64) -> f64 {
+    let tr = tr_h(n) as f64;
+    let m = euler_totient(n) as f64;
+
+    m * (tr / (n as f64)).sqrt()
+}
