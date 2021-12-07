@@ -1,0 +1,19 @@
+[package]
+name = "cyclovander_cli"
+version = "0.1.0"
+authors = ["Edoardo Signorini <edoars@gmail.com>"]
+edition = "2018"
+description = "CLI utils for cyclovander crate"
+license = "Apache-2.0"
+readme = "../README.md"
+
+[dependencies]
+structopt = "0.3.13"
+anyhow = "=1.0.48"
+indicatif = "0.16.2"
+atty = "0.2"
+rayon = "1.5.1"
+
+[dependencies.cyclovander]
+version = "0.1.0"
+path = "../lib"

@@ -212,14 +212,21 @@ dependencies = [
 name = "cyclovander"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "atty",
- "indicatif",
  "ndarray",
  "ndarray-linalg",
  "num 0.4.0",
- "rayon",
  "red_primality",
+]
+
+[[package]]
+name = "cyclovander_cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "atty",
+ "cyclovander",
+ "indicatif",
+ "rayon",
  "structopt",
 ]
 
