@@ -10,7 +10,7 @@ license = "Apache-2.0"
 readme = "../README.md"
 
 [features]
-default = ["intel-mkl-system"]
+default = ["intel-mkl-static"]
 
 netlib-static   = ["ndarray-linalg/netlib-static"]
 netlib-system   = ["ndarray-linalg/netlib-system"]
