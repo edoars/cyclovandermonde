@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use cyclovander::tr_h;
+use cyclovander::{cond, tr_h};
 use indicatif::ProgressBar;
 use rayon::prelude::*;
 use rayon::ThreadPoolBuilder;
@@ -9,7 +9,17 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
-enum Opt {
+struct Opt {
+    /// Compute trace instead of condition number
+    #[structopt(short, long)]
+    trace: bool,
+
+    #[structopt(subcommand)]
+    cmd: Command,
+}
+
+#[derive(StructOpt, Debug)]
+enum Command {
     /// Generate table from file
     Table {
         /// Input file
@@ -31,24 +41,34 @@ enum Opt {
     },
 }
 
-fn print_table(reader: BufReader<File>) -> Result<()> {
-    writeln!(io::stdout(), "n\tTr(H_n)")?;
+fn get_result(n: u64, trace: bool) -> String {
+    if trace {
+        tr_h(n).to_string()
+    } else {
+        cond(n).to_string()
+    }
+}
+
+fn print_table(reader: BufReader<File>, trace: bool) -> Result<()> {
+    let header = if trace { "n\tTr(H_n)" } else { "n\tCond(V_n)" };
+    writeln!(io::stdout(), "{}", header)?;
 
     let _ = reader
         .lines()
         .par_bridge()
         .filter_map(|line| line.ok())
         .filter_map(|line| line.parse::<u64>().ok())
-        .try_for_each(|n| writeln!(io::stdout(), "{0}\t{1}", n, tr_h(n)));
+        .try_for_each(|n| writeln!(io::stdout(), "{0}\t{1}", n, get_result(n, trace)));
 
     Ok(())
 }
 
-fn print_table_with_spinner(reader: BufReader<File>) -> Result<()> {
+fn print_table_with_spinner(reader: BufReader<File>, trace: bool) -> Result<()> {
     let pb = ProgressBar::new_spinner();
     pb.enable_steady_tick(120);
 
-    writeln!(io::stdout(), "n\tTr(H_n)")?;
+    let header = if trace { "n\tTr(H_n)" } else { "n\tCond(V_n)" };
+    writeln!(io::stdout(), "{}", header)?;
 
     let _ = reader
         .lines()
@@ -57,13 +77,13 @@ fn print_table_with_spinner(reader: BufReader<File>) -> Result<()> {
         .filter_map(|line| line.parse::<u64>().ok())
         .try_for_each(|n| {
             pb.set_message(format!("computing {}...", n));
-            writeln!(io::stdout(), "{0}\t{1}", n, tr_h(n))
+            writeln!(io::stdout(), "{0}\t{1}", n, get_result(n, trace))
         });
 
     Ok(())
 }
 
-fn parse_table(input: PathBuf, mut quiet: bool, threads: usize) -> Result<()> {
+fn parse_table(input: PathBuf, trace: bool, mut quiet: bool, threads: usize) -> Result<()> {
     let in_stream = File::open(input).with_context(|| format!("could not read file"))?;
     let reader = BufReader::new(in_stream);
 
@@ -76,13 +96,13 @@ fn parse_table(input: PathBuf, mut quiet: bool, threads: usize) -> Result<()> {
         .build_global()?;
 
     match quiet {
-        false => print_table_with_spinner(reader),
-        true => print_table(reader),
+        false => print_table_with_spinner(reader, trace),
+        true => print_table(reader, trace),
     }
 }
 
-fn parse_get(n: u64) -> Result<()> {
-    println!("{}", tr_h(n));
+fn parse_get(n: u64, trace: bool) -> Result<()> {
+    println!("{}", get_result(n, trace));
 
     Ok(())
 }
@@ -90,12 +110,12 @@ fn parse_get(n: u64) -> Result<()> {
 fn main() -> Result<()> {
     let matches = Opt::from_args();
 
-    match matches {
-        Opt::Table {
+    match matches.cmd {
+        Command::Table {
             input,
             quiet,
             threads,
-        } => parse_table(input, quiet, threads),
-        Opt::Get { n } => parse_get(n),
+        } => parse_table(input, matches.trace, quiet, threads),
+        Command::Get { n } => parse_get(n, matches.trace),
     }
 }
