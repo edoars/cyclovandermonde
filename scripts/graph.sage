@@ -14,10 +14,10 @@ def read_table(input):
 
     try:
         with open(input, newline="") as fp:
-            reader = csv.reader(fp, delimiter=" ")
-            next(reader)
+            reader = csv.reader(fp, delimiter="\t")
+            header = next(reader)
             for row in reader:
-                data.append((int(row[0]), int(row[1])))
+                data.append((int(row[0]), float(row[1])))
 
     except IOError:
         print(f"Could not read file {input}")
@@ -29,32 +29,18 @@ def read_table(input):
         print(f"Unexpected error during table parsing")
         sys.exit(1)
 
-    return data
+    return header, data
 
 
 def partition_data(data):
-    max_n = max(x for (x, y) in data)
-    max_p = floor(sqrt(max_n))
-    len_threshold = floor(len(data) * THRESHOLD)
-    p_list = [
-        p
-        for p in primes(3, max_p)
-        if len([c for c in data if c[0] % p == 0]) > len_threshold
-    ]
-    print(p_list)
+    # data = [(x, y) for (x, y) in data if x % 2 != 0]      # remove even input
+    # data = [(x, y / euler_phi(x)) for (x, y) in data]     # normalize output
+    max_n = max(len(factor(x)) for (x, y) in data)
 
-    data_primes = [
-        c for c in data if is_prime(c[0]) or (c[0] % 2 == 0 and is_prime(c[0] // 2))
-    ]
-    partitions = {"$p \wedge 2 \cdot p$": data_primes}
-    for p in p_list:
-        tmp = [
-            c for c in data if c[0] % p == 0 and not c in sum(partitions.values(), [])
-        ]
-        partitions[f"${p}\cdot p$"] = tmp
-
-    data_res = [c for c in data if not c in sum(partitions.values(), [])]
-    partitions["others"] = data_res
+    partitions = {
+        f"${k}$": [(x, y) for (x, y) in data if len(factor(x)) == k]
+        for k in range(1, max_n + 1)
+    }
 
     return partitions
 
@@ -65,7 +51,7 @@ def main(argv):
         print("Output a graph of Tr(H_n) based on input table")
         sys.exit(1)
 
-    data = read_table(argv[1])
+    header, data = read_table(argv[1])
     partitions = partition_data(data)
 
     plots = sum(
@@ -78,10 +64,10 @@ def main(argv):
         for k, key in enumerate(partitions)
     )
 
-    plots.axes_labels(["$n$", "Tr$(H_n)$"])
-    plots.set_legend_options(loc="lower right")
+    plots.axes_labels([f"${header[0]}$", f"${header[1]}$"])
+    plots.set_legend_options(title="Smallest prime", loc="upper left")
 
-    plots.save(argv[2], dpi=300)
+    plots.save(argv[2], dpi=300, title="$n$ squarefree, $2 < n < 10000$")
 
 
 if __name__ == "__main__":
