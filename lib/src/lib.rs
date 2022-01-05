@@ -90,4 +90,37 @@ mod tests {
 
         assert_eq!(traces, [1576, 1640, 5776, 3740, 11600]);
     }
+
+    macro_rules! precision_tests {
+        ($($name:ident: $value:expr,)*) => {
+            $(
+                #[test]
+                #[ignore]
+                fn $name() {
+                    let (n, tol) = $value;
+                    let h = get_h(n);
+
+                    for ((i, j), x) in h.indexed_iter() {
+                        let fract = x.fract();
+                        assert!(
+                            fract < tol || (1f64 - fract) < tol,
+                            "Entry ({}, {}): {} is above tollerance {}",
+                            i,
+                            j,
+                            x,
+                            tol
+                        )
+                    }
+                }
+            )*
+        };
+    }
+
+    precision_tests! {
+        precision_3: (3, 1e-9),
+        precision_15: (15, 1e-9),
+        precision_107: (107, 1e-9),
+        precision_1155: (1155, 1e7),
+        precision_8151: (8151, 1e-4),
+    }
 }
