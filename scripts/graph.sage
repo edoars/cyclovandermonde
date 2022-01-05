@@ -52,6 +52,8 @@ def main(argv):
         sys.exit(1)
 
     header, data = read_table(argv[1])
+    min_in = min(x for (x, y) in data)
+    max_in = max(x for (x, y) in data)
     partitions = partition_data(data)
 
     plots = sum(
@@ -67,7 +69,7 @@ def main(argv):
     plots.axes_labels([f"${header[0]}$", f"${header[1]}$"])
     plots.set_legend_options(title="Smallest prime", loc="upper left")
 
-    plots.save(argv[2], dpi=300, title="$n$ squarefree, $2 < n < 10000$")
+    plots.save(argv[2], dpi=300, title=f"$n$ squarefree, ${min_in-1} < n < {max_in+1}$")
 
 
 if __name__ == "__main__":

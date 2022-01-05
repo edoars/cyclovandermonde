@@ -34,7 +34,7 @@ enum Command {
         #[structopt(short, long, default_value = "1")]
         threads: usize,
     },
-    /// Output trace for n
+    /// Output for integer n
     Get {
         /// Unsigned 64 bits integer
         n: u64,
