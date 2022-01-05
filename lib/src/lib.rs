@@ -5,7 +5,7 @@
 //!
 //! [`DSS20`]: https://doi.org/10.1515/jmc-2020-0009
 
-use ndarray::Array;
+use ndarray::{Array, ArrayBase, Dim, OwnedRepr};
 use ndarray_linalg::*;
 use num::integer::gcd;
 use red_primality::{euler_totient, mobius};
@@ -22,6 +22,16 @@ fn get_index(i: usize, j: usize) -> usize {
     idx as usize
 }
 
+#[inline]
+fn get_h(n: u64) -> ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>> {
+    let m = euler_totient(n) as usize;
+    let v: Vec<_> = (0..(m as i64)).map(|t: i64| ct(t, n)).collect();
+    let g = Array::from_shape_fn((m, m), |(i, j)| v[get_index(i, j)] as f64);
+    let g_inv = g.inv_into().unwrap();
+
+    (n as f64) * g_inv
+}
+
 /// Compute the trace of *H_n*.
 ///
 /// *H_n* is defined as *n G_n^{-1}*, where *G_n* is the Gram matrix of *V_n*, the Vandermonde matrix associated with the *n*th cyclotomic polynomial.
@@ -31,11 +41,8 @@ fn get_index(i: usize, j: usize) -> usize {
 /// [`DSS20`]: https://doi.org/10.1515/jmc-2020-0009
 #[inline]
 pub fn tr_h(n: u64) -> u64 {
-    let m = euler_totient(n) as usize;
-    let v: Vec<_> = (0..(m as i64)).map(|t: i64| ct(t, n)).collect();
-    let g = Array::from_shape_fn((m, m), |(i, j)| v[get_index(i, j)] as f64);
-    let g_inv = g.inv_into().unwrap();
-    let tr = ((n as f64) * g_inv).trace().unwrap();
+    let h = get_h(n);
+    let tr = h.trace().unwrap();
 
     tr.round() as u64
 }
