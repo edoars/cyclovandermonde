@@ -1,4 +1,4 @@
-# Cyclotomic Vandermonde
+# Condition number of cyclotomic Vandermonde matrices
 
 Rust library associated to the article TBD.
 
