@@ -8,12 +8,13 @@
 use ndarray::{Array, ArrayBase, Dim, OwnedRepr};
 use ndarray_linalg::*;
 use num::integer::gcd;
-use red_primality::{euler_totient, mobius};
+use red_primality::{euler_totient, factor, PrimeFactorization};
 
 #[inline]
-fn ct(t: i64, n: u64) -> i64 {
+fn ct(t: i64, n: u64, n_factor: PrimeFactorization) -> i64 {
     let g_nt = gcd(n as i64, t) as u64;
-    mobius(n, g_nt) * (euler_totient(n) as i64) / (euler_totient(n / g_nt) as i64)
+    let n_g_factor = factor(n / g_nt);
+    n_g_factor.mobius() * (n_factor.euler_totient() as i64) / (n_g_factor.euler_totient() as i64)
 }
 
 #[inline]
@@ -24,8 +25,11 @@ fn get_index(i: usize, j: usize) -> usize {
 
 #[inline]
 fn get_h(n: u64) -> ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>> {
-    let m = euler_totient(n) as usize;
-    let v: Vec<_> = (0..(m as i64)).map(|t: i64| ct(t, n)).collect();
+    let n_factor = factor(n);
+    let m = n_factor.euler_totient() as usize;
+    let v: Vec<_> = (0..(m as i64))
+        .map(|t: i64| ct(t, n, n_factor.clone()))
+        .collect();
     let g = Array::from_shape_fn((m, m), |(i, j)| v[get_index(i, j)] as f64);
     let g_inv = g.inv_into().unwrap();
 
