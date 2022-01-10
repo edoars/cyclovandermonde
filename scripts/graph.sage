@@ -67,7 +67,7 @@ def main(argv):
     )
 
     plots.axes_labels([f"${header[0]}$", f"${header[1]}$"])
-    plots.set_legend_options(title="Smallest prime", loc="upper left")
+    plots.set_legend_options(title="$\omega(n)$", loc="lower right")
 
     plots.save(argv[2], dpi=300, title=f"$n$ squarefree, ${min_in-1} < n < {max_in+1}$")
 
