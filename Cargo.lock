@@ -360,7 +360,7 @@ dependencies = [
 
 [[package]]
 name = "cyclovander"
-version = "0.1.0"
+version = "1.1.0"
 dependencies = [
  "criterion",
  "ndarray",
@@ -372,7 +372,7 @@ dependencies = [
 
 [[package]]
 name = "cyclovander_cli"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "atty",

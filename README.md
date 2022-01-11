@@ -28,7 +28,7 @@ The library has a command line interface, which can be called via `cargo run`. T
 
 ```sh
 $ cargo run --release -- --help
-cyclovander_cli 0.1.0
+cyclovander_cli 1.0.0
 
 USAGE:
     cyclovander_cli [FLAGS] <SUBCOMMAND>
