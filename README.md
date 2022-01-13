@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/435289572.svg)](https://zenodo.org/badge/latestdoi/435289572)
 
-Rust library associated to the article TBD.
+Rust library associated to the article [`DSS21`](https://arxiv.org/abs/2201.04365).
 
 Provides an efficient function to compute the condition number of *V_n*, the Vandermonde matrix associated with the *n*th cyclotomic polynomial.
 The condition number is computed via the trace of the matrix *H_n*, as shown in [`DSS20`](https://doi.org/10.1515/jmc-2020-0009).
